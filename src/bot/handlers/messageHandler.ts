@@ -1,5 +1,5 @@
 import { WASocket, proto } from '@whiskeysockets/baileys';
-//import commandHandler from './commandHandler';
+import commandHandler from './commandHandler';
 import mediaHandler from './mediaHandler';
 //import locationHandler from './locationHandler';
 import textHandler from './textHandler';
@@ -10,11 +10,11 @@ type HandlerFunction = (
 ) => Promise<boolean>;
 
 const handlers: HandlerFunction[] = [
-  textHandler,
-  mediaHandler,
-  //commandHandler,
-  //locationHandler,
-  //voiceHandler, contactHandler, documentHandler...
+    commandHandler,
+    textHandler,
+    mediaHandler,
+    //locationHandler,
+    //voiceHandler, contactHandler, documentHandler...
 ];
 
 export default async function messageHandler(
