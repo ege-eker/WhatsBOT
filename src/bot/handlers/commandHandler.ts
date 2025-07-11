@@ -1,11 +1,11 @@
 import { WASocket, proto } from '@whiskeysockets/baileys';
 
 // Importing commands
-//import help from '../../commands/help';
+import help from '../../commands/help';
 import sticker from '../../commands/sticker';
 
 const commands: Record<string, (sock: WASocket, msg: proto.IWebMessageInfo) => Promise<boolean>> = {
-  //help,
+  help,
   sticker
 };
 
