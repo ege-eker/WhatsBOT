@@ -32,6 +32,11 @@ export default async function mediaHandler(
         const filePath = path.join(folderPath, `${timestamp}.${extension}`);
         fs.writeFileSync(filePath, buffer);
 
+        const caption = imageMessage?.caption || videoMessage?.caption;
+        if (caption) {
+            console.log(`✏️ Media caption from ${from}: ${caption}`);
+        }
+
         console.log(`✅ ${mediaType.toUpperCase()} saved. FileLoc: ${filePath}, JID: ${from}`);
 
         return true; // handled
