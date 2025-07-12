@@ -14,7 +14,11 @@ export default async function commandHandler(
     msg: proto.IWebMessageInfo
 ): Promise<boolean> {
     const from = msg.key.remoteJid;
-    const text = msg.message?.conversation || msg.message?.extendedTextMessage?.text;
+    const text =
+        msg.message?.conversation ||
+        msg.message?.extendedTextMessage?.text ||
+        msg.message?.imageMessage?.caption ||
+        msg.message?.videoMessage?.caption;
 
     if (!text?.startsWith('/')) {
         console.warn(`${from} : message does not start with a command`);
