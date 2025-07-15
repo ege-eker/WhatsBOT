@@ -12,7 +12,7 @@ function tmpFilePath(extension: string): string {
     return path.join(tmpDir, filename);
 }
 
-async function videoToWebp(buffer: Buffer): Promise<Buffer> {
+async function videoToWebp(buffer: Buffer, duration: number): Promise<Buffer> {
     return new Promise((resolve, reject) => {
         const inputPath = tmpFilePath('mp4');
         const outputPath = tmpFilePath('webp');
@@ -20,7 +20,7 @@ async function videoToWebp(buffer: Buffer): Promise<Buffer> {
         fs.writeFileSync(inputPath, buffer);
 
         ffmpeg(inputPath)
-            .inputOption(['-t 15']) // Limit to 6 seconds
+            .inputOption([`-t ${duration}`]) // limit duration to specified seconds
             .outputOption([
                 '-vcodec libwebp',
                 '-vf scale=512:512:force_original_aspect_ratio=decrease,fps=15',
@@ -45,13 +45,22 @@ async function videoToWebp(buffer: Buffer): Promise<Buffer> {
 
 export default async function stickerCommand(
     sock: WASocket,
-    msg: proto.IWebMessageInfo
+    msg: proto.IWebMessageInfo,
+    args: string[],
 ): Promise<boolean> {
+    if (args[0] && isNaN(parseInt(args[0]))) {
+        await sock.sendMessage(msg.key.remoteJid!, {
+            text: '❌ Invalid duration.',
+        }, {quoted: msg});
+        return true; // handled
+    }
+
     const from = msg.key.remoteJid!;
     const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
 
     const image = msg.message?.imageMessage || quoted?.imageMessage;
     const video = msg.message?.videoMessage || quoted?.videoMessage;
+    const duration = Math.min(parseInt(args[0] || '6'), 15); // default 6, max 15
 
     if (!image && !video) {
         await sock.sendMessage(from, {
@@ -77,7 +86,7 @@ export default async function stickerCommand(
                 .webp()
                 .toBuffer();
         } else {
-            stickerBuffer = await videoToWebp(buffer);
+            stickerBuffer = await videoToWebp(buffer, duration);
         }
 
         await sock.sendMessage(from, {sticker: stickerBuffer}, {quoted: msg});
