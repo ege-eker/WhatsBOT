@@ -9,7 +9,7 @@ export default async function help(
   const helpMessage = `
 🛠 *Komutlar Listesi*:
 
-• */sticker* — Gönderdiğiniz görsel veya videoyu sticker'a çevirir
+• */sticker [videosüre-max15s]* — Gönderdiğiniz görsel veya videoyu sticker'a çevirir
 • */help* — Bu yardım mesajını gösterir
 
 📌 Örnek kullanım:

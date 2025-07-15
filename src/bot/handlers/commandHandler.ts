@@ -1,12 +1,12 @@
-import { WASocket, proto } from '@whiskeysockets/baileys';
-
+import { WASocket, proto } from '@whiskeysockets/baileys'
+import { CommandFunction } from '../../types/command'
 // Importing commands
 import help from '../../commands/help';
 import sticker from '../../commands/sticker';
 
-const commands: Record<string, (sock: WASocket, msg: proto.IWebMessageInfo) => Promise<boolean>> = {
+const commands: Record<string, CommandFunction> = {
   help,
-  sticker
+  sticker,
 };
 
 export default async function commandHandler(
@@ -25,7 +25,7 @@ export default async function commandHandler(
         return false; // not handled
     }
 
-    const [cmd] = text.trim().slice(1).split(/\s+/);
+    const [cmd, ...args] = text.trim().slice(1).split(/\s+/);
     const command = commands[cmd.toLowerCase()];
     if (!command) {
         console.warn(`${from} : Unknown commmand: ${cmd}`);
@@ -34,5 +34,5 @@ export default async function commandHandler(
         }, { quoted: msg });
         return true; // handled
     }
-    return await command(sock, msg);
+    return await command(sock, msg, args);
 }
