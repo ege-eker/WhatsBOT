@@ -3,10 +3,13 @@ import { CommandFunction } from '../../types/command'
 // Importing commands
 import help from '../../commands/help';
 import sticker from '../../commands/sticker';
+import stt from "../../commands/stt";
 
 const commands: Record<string, CommandFunction> = {
-  help,
-  sticker,
+    help,
+    sticker,
+    stt,
+    tts: stt,
 };
 
 export default async function commandHandler(
