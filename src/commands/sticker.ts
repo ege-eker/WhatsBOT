@@ -16,18 +16,19 @@ async function videoToWebp(buffer: Buffer, duration: number): Promise<Buffer> {
     return new Promise((resolve, reject) => {
         const inputPath = tmpFilePath('mp4');
         const outputPath = tmpFilePath('webp');
-
         fs.writeFileSync(inputPath, buffer);
 
         ffmpeg(inputPath)
-            .inputOption([`-t ${duration}`]) // limit duration to specified seconds
-            .outputOption([
-                '-vcodec libwebp',
-                '-vf scale=512:512:force_original_aspect_ratio=decrease,fps=15',
+            .inputOption([`-t ${duration}`]) // Set duration for the video
+            .outputOptions([
+                '-vcodec', 'libwebp',
+                '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,fps=15,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000',
                 '-loop', '0',
                 '-preset', 'default',
                 '-an',
                 '-vsync', '0',
+                '-lossless', '1',   // Lossless compression
+                '-quality', '80',   // 0-100 quality scale
             ])
             .output(outputPath)
             .on('end', () => {
