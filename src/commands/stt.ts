@@ -4,7 +4,7 @@ import os from 'os';
 import path from 'path';
 import { spawn } from 'child_process';
 import { downloadMedia } from '../bot/utils/download';
-import { transcribeAudioFile } from '../clients/whisperClient';
+import { transcribeWithPolling } from '../clients/whisperClient';
 import { CommandFunction } from '../types/command';
 
 async function convertToWav(inputPath: string, outputPath: string): Promise<void> {
@@ -71,7 +71,7 @@ const sttCommand: CommandFunction = async (sock, msg, args) => {
     await convertToWav(tmpInput, tmpOutput);
     await fs.unlink(tmpInput); // clean up original file
 
-    const text = await transcribeAudioFile(tmpOutput);
+    const text = await transcribeWithPolling(tmpOutput);
     await fs.unlink(tmpOutput); // clean up .wav file
 
     await sock.sendMessage(from, {
